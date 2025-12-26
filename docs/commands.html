@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Commands - Krakenv</title>
+    <link rel="stylesheet" href="assets/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="nav nav-dark">
+        <a href="index.html" class="logo">🐙 Krakenv</a>
+        <div class="nav-links">
+            <a href="getting-started.html">Getting Started</a>
+            <a href="annotation-syntax.html">Syntax</a>
+            <a href="commands.html" class="active">Commands</a>
+            <a href="https://github.com/theburrowhub/krakenv" target="_blank">GitHub</a>
+        </div>
+    </nav>
+
+    <main class="docs">
+        <article>
+            <h1>Commands Reference</h1>
+
+            <h2>Global Flags</h2>
+            <table>
+                <tr>
+                    <td><code>--dist, -d</code></td>
+                    <td>Path to distributable file</td>
+                    <td><code>.env.dist</code></td>
+                </tr>
+                <tr>
+                    <td><code>--non-interactive, -n</code></td>
+                    <td>Disable TUI; fail on unresolved</td>
+                    <td><code>false</code></td>
+                </tr>
+                <tr>
+                    <td><code>--quiet, -q</code></td>
+                    <td>Suppress non-error output</td>
+                    <td><code>false</code></td>
+                </tr>
+                <tr>
+                    <td><code>--verbose, -v</code></td>
+                    <td>Enable detailed output</td>
+                    <td><code>false</code></td>
+                </tr>
+            </table>
+
+            <h2 id="generate">generate</h2>
+            <p>Generate or update an environment file from the distributable.</p>
+            <pre><code>krakenv generate &lt;target&gt; [flags]</code></pre>
+            
+            <h3>Flags</h3>
+            <table>
+                <tr>
+                    <td><code>--force, -f</code></td>
+                    <td>Overwrite without confirmation</td>
+                </tr>
+                <tr>
+                    <td><code>--all, -a</code></td>
+                    <td>Generate all environments from config</td>
+                </tr>
+                <tr>
+                    <td><code>--keep-annotations, -k</code></td>
+                    <td>Preserve annotations in output</td>
+                </tr>
+            </table>
+
+            <h3>Examples</h3>
+            <pre><code># Interactive mode
+krakenv generate .env.local
+
+# Generate all environments
+krakenv generate --all
+
+# CI/CD mode (fails if unresolved)
+krakenv generate .env.local --non-interactive</code></pre>
+
+            <h2 id="validate">validate</h2>
+            <p>Validate environment file against distributable annotations.</p>
+            <pre><code>krakenv validate &lt;target&gt; [flags]</code></pre>
+
+            <h3>Flags</h3>
+            <table>
+                <tr>
+                    <td><code>--strict, -s</code></td>
+                    <td>Require all variables to have annotations</td>
+                </tr>
+            </table>
+
+            <h3>Exit Codes</h3>
+            <table>
+                <tr><td><code>0</code></td><td>All validations passed</td></tr>
+                <tr><td><code>1</code></td><td>Validation errors found</td></tr>
+                <tr><td><code>2</code></td><td>File not found</td></tr>
+            </table>
+
+            <h3>Examples</h3>
+            <pre><code>krakenv validate .env.local
+krakenv validate .env.production --strict
+krakenv validate .env.testing --non-interactive</code></pre>
+
+            <h2 id="inspect">inspect</h2>
+            <p>Compare environment file with distributable; identify discrepancies.</p>
+            <pre><code>krakenv inspect &lt;target&gt; [flags]</code></pre>
+
+            <h3>Flags</h3>
+            <table>
+                <tr>
+                    <td><code>--sync, -s</code></td>
+                    <td>Interactively sync discrepancies</td>
+                </tr>
+                <tr>
+                    <td><code>--json, -j</code></td>
+                    <td>Output as JSON</td>
+                </tr>
+            </table>
+
+            <h3>Examples</h3>
+            <pre><code>krakenv inspect .env.local
+krakenv inspect .env.local --json | jq '.missing | length'</code></pre>
+
+            <h2 id="add">add</h2>
+            <p>Add a new annotated variable to the distributable.</p>
+            <pre><code>krakenv add &lt;name&gt; [flags]</code></pre>
+
+            <h3>Flags</h3>
+            <table>
+                <tr><td><code>--type, -t</code></td><td>Variable type</td></tr>
+                <tr><td><code>--prompt, -p</code></td><td>Prompt message</td></tr>
+                <tr><td><code>--default, -D</code></td><td>Default value</td></tr>
+                <tr><td><code>--min</code></td><td>Minimum (int/numeric)</td></tr>
+                <tr><td><code>--max</code></td><td>Maximum (int/numeric)</td></tr>
+                <tr><td><code>--minlen</code></td><td>Min length (string)</td></tr>
+                <tr><td><code>--maxlen</code></td><td>Max length (string)</td></tr>
+                <tr><td><code>--pattern</code></td><td>Regex pattern (string)</td></tr>
+                <tr><td><code>--options, -o</code></td><td>Options (enum)</td></tr>
+                <tr><td><code>--format</code></td><td>Format (object)</td></tr>
+                <tr><td><code>--optional</code></td><td>Mark as optional</td></tr>
+                <tr><td><code>--secret</code></td><td>Mark as secret</td></tr>
+            </table>
+
+            <h3>Examples</h3>
+            <pre><code>krakenv add API_URL --type string --prompt "API base URL?"
+krakenv add MAX_CONN --type int --min 1 --max 100 --default 10
+krakenv add LOG_LEVEL --type enum --options "debug,info,warn,error"
+krakenv add DB_PASSWORD --type string --secret</code></pre>
+
+            <h2 id="init">init</h2>
+            <p>Initialize a new distributable file.</p>
+            <pre><code>krakenv init [flags]</code></pre>
+
+            <h3>Flags</h3>
+            <table>
+                <tr><td><code>--path, -p</code></td><td>Output path (default: .env.dist)</td></tr>
+                <tr><td><code>--environments, -e</code></td><td>Environments (default: local)</td></tr>
+                <tr><td><code>--template, -t</code></td><td>Create with example comments only</td></tr>
+                <tr><td><code>--force, -f</code></td><td>Overwrite existing file</td></tr>
+            </table>
+
+            <h2 id="version">version</h2>
+            <p>Display version and build information.</p>
+            <pre><code>krakenv version</code></pre>
+
+            <h2 id="cicd">CI/CD Integration</h2>
+
+            <h3>GitHub Actions</h3>
+            <pre><code>- name: Validate environment
+  run: krakenv validate .env.production --non-interactive</code></pre>
+
+            <h3>Pre-commit Hook</h3>
+            <pre><code>#!/bin/bash
+krakenv validate .env.local --non-interactive || exit 1</code></pre>
+
+            <h3>Makefile</h3>
+            <pre><code>env-setup:
+	krakenv generate .env.local
+
+env-validate:
+	krakenv validate .env.local --non-interactive
+
+.PHONY: env-setup env-validate</code></pre>
+        </article>
+    </main>
+
+    <style>
+        .nav-dark {
+            position: relative;
+            background: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+        }
+        .docs {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        .docs h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .docs h2 {
+            font-size: 1.75rem;
+            margin: 3rem 0 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--color-border);
+        }
+        .docs h3 {
+            font-size: 1.25rem;
+            margin: 2rem 0 0.5rem;
+            color: var(--color-secondary);
+        }
+        .docs p {
+            color: var(--color-text-muted);
+            margin-bottom: 1rem;
+        }
+        .docs pre {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        .docs code {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--color-secondary);
+        }
+        .docs table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        .docs th, .docs td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+        }
+        .docs td code {
+            background: var(--color-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+        .nav-links .active {
+            color: var(--color-primary);
+        }
+    </style>
+</body>
+</html>
+

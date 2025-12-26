@@ -1,0 +1,47 @@
+# Krakenv .gitignore
+
+# Binary
+krakenv
+krakenv.exe
+*.exe
+*.test
+*.out
+
+# Build artifacts
+dist/
+bin/
+vendor/
+
+# Coverage
+coverage.out
+coverage.html
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment files (except distributable)
+.env
+.env.local
+.env.testing
+.env.production
+.env.staging
+!.env.dist
+!.env.example
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Go workspace
+go.work
+go.work.sum
+

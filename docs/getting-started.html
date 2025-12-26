@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started - Krakenv</title>
+    <link rel="stylesheet" href="assets/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="nav nav-dark">
+        <a href="index.html" class="logo">🐙 Krakenv</a>
+        <div class="nav-links">
+            <a href="getting-started.html" class="active">Getting Started</a>
+            <a href="annotation-syntax.html">Syntax</a>
+            <a href="commands.html">Commands</a>
+            <a href="https://github.com/theburrowhub/krakenv" target="_blank">GitHub</a>
+        </div>
+    </nav>
+
+    <main class="docs">
+        <article>
+            <h1>Getting Started</h1>
+            
+            <h2>Installation</h2>
+            
+            <h3>Homebrew (macOS/Linux)</h3>
+            <pre><code>brew install theburrowhub/tap/krakenv</code></pre>
+
+            <h3>Go Install</h3>
+            <pre><code>go install github.com/theburrowhub/krakenv/cmd/krakenv@latest</code></pre>
+
+            <h3>Binary Download</h3>
+            <p>Download pre-built binaries from the <a href="https://github.com/theburrowhub/krakenv/releases">Releases</a> page.</p>
+
+            <h2>Quick Start</h2>
+
+            <h3>1. Initialize a Distributable</h3>
+            <pre><code>krakenv init</code></pre>
+            <p>This creates a <code>.env.dist</code> file with example structure.</p>
+
+            <h3>2. Add Variables</h3>
+            <pre><code># Add a string variable
+krakenv add API_URL --type string --prompt "API base URL?"
+
+# Add an integer with constraints
+krakenv add MAX_CONNECTIONS --type int --min 1 --max 100 --default 10
+
+# Add an enum
+krakenv add LOG_LEVEL --type enum --options "debug,info,warn,error" --default info
+
+# Add a secret
+krakenv add DB_PASSWORD --type string --prompt "Database password?" --secret</code></pre>
+
+            <h3>3. Generate Environment File</h3>
+            <pre><code>krakenv generate .env.local</code></pre>
+            <p>The wizard will prompt for each variable that needs a value.</p>
+
+            <h3>4. Validate Configuration</h3>
+            <pre><code>krakenv validate .env.local</code></pre>
+
+            <h2>Example Workflow</h2>
+
+            <h3>Your .env.dist file:</h3>
+            <pre><code>#krakenv:environments=local,testing,production
+
+# Database
+DB_HOST=localhost #prompt:Database host?|string
+DB_PORT=5432 #prompt:Database port?|int;min:1;max:65535
+DB_PASSWORD= #prompt:Password?|string;secret
+
+# App
+APP_ENV=development #prompt:Environment?|enum;options:development,staging,production</code></pre>
+
+            <h3>Generate for local development:</h3>
+            <pre><code>$ krakenv generate .env.local
+🐙 Krakenv Configuration Wizard
+
+DB_PASSWORD
+🔒 Password? [string]
+> ••••••••••
+
+✓ Generated .env.local with 4 variables</code></pre>
+
+            <h3>Validate in CI/CD:</h3>
+            <pre><code>$ krakenv validate .env.production --non-interactive
+✓ VALIDATION PASSED: .env.production</code></pre>
+
+            <h2>Multi-Environment Setup</h2>
+
+            <p>Generate all environments at once:</p>
+            <pre><code>krakenv generate --all</code></pre>
+
+            <p>This reads the <code>environments</code> config from your distributable and generates:</p>
+            <ul>
+                <li><code>.env.local</code></li>
+                <li><code>.env.testing</code></li>
+                <li><code>.env.production</code></li>
+            </ul>
+
+            <h2>Next Steps</h2>
+            <ul>
+                <li><a href="annotation-syntax.html">Learn annotation syntax</a></li>
+                <li><a href="commands.html">Explore all commands</a></li>
+                <li>Set up <a href="commands.html#cicd">CI/CD integration</a></li>
+            </ul>
+        </article>
+    </main>
+
+    <style>
+        .nav-dark {
+            position: relative;
+            background: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+        }
+        .docs {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        .docs h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .docs h2 {
+            font-size: 1.75rem;
+            margin: 3rem 0 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--color-border);
+        }
+        .docs h3 {
+            font-size: 1.25rem;
+            margin: 2rem 0 0.5rem;
+            color: var(--color-secondary);
+        }
+        .docs p {
+            color: var(--color-text-muted);
+            margin-bottom: 1rem;
+        }
+        .docs pre {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        .docs code {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--color-secondary);
+        }
+        .docs a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+        .docs a:hover {
+            text-decoration: underline;
+        }
+        .docs ul {
+            color: var(--color-text-muted);
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .docs li {
+            margin-bottom: 0.5rem;
+        }
+        .nav-links .active {
+            color: var(--color-primary);
+        }
+    </style>
+</body>
+</html>
+

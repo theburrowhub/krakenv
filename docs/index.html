@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krakenv - Environment Variable Management</title>
+    <link rel="icon" type="image/png" href="assets/krakenv-icon.png">
+    <link rel="apple-touch-icon" href="assets/krakenv-icon.png">
+    <link rel="stylesheet" href="assets/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="hero">
+        <nav class="nav">
+            <div class="logo">
+                <img src="assets/krakenv-icon.png" alt="Krakenv" class="logo-icon">
+                <span>Krakenv</span>
+            </div>
+            <div class="nav-links">
+                <a href="getting-started.html">Getting Started</a>
+                <a href="annotation-syntax.html">Syntax</a>
+                <a href="commands.html">Commands</a>
+                <a href="https://github.com/theburrowhub/krakenv" target="_blank">GitHub</a>
+            </div>
+        </nav>
+        <div class="hero-content">
+            <img src="assets/krakenv-banner.png" alt="Krakenv - When envs get complex, release the krakenv" class="hero-banner">
+            <p class="tagline">Environment variable management with annotation-based wizards</p>
+            <div class="cta-buttons">
+                <a href="getting-started.html" class="btn btn-primary">Get Started</a>
+                <a href="https://github.com/theburrowhub/krakenv/releases" class="btn btn-secondary">Download</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="features">
+            <div class="feature">
+                <div class="feature-icon">🧙</div>
+                <h3>Interactive Wizard</h3>
+                <p>Guided configuration with type validation and constraints. Never misconfigure again.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📝</div>
+                <h3>Inline Annotations</h3>
+                <p>Define prompts, types, and validation rules directly in your <code>.env.dist</code> file.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🔍</div>
+                <h3>Inspection & Sync</h3>
+                <p>Compare files, find discrepancies, and sync changes between environments.</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🚀</div>
+                <h3>CI/CD Ready</h3>
+                <p>Non-interactive mode with proper exit codes for pipeline integration.</p>
+            </div>
+        </section>
+
+        <section class="demo">
+            <h2>See it in action</h2>
+            <div class="code-example">
+                <div class="code-header">
+                    <span class="filename">.env.dist</span>
+                </div>
+                <pre><code><span class="comment">#krakenv:environments=local,testing,production</span>
+
+<span class="comment"># Database Configuration</span>
+<span class="var">DB_HOST</span>=localhost <span class="annotation">#prompt:Database host?|string</span>
+<span class="var">DB_PORT</span>=5432 <span class="annotation">#prompt:Database port?|int;min:1;max:65535</span>
+<span class="var">DB_PASSWORD</span>= <span class="annotation">#prompt:Password?|string;secret</span>
+
+<span class="comment"># Application</span>
+<span class="var">APP_ENV</span>=development <span class="annotation">#prompt:Environment?|enum;options:development,staging,production</span>
+<span class="var">DEBUG</span>=true <span class="annotation">#prompt:Enable debug?|boolean;optional</span></code></pre>
+            </div>
+            <div class="terminal">
+                <div class="terminal-header">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                    <span class="terminal-title">Terminal</span>
+                </div>
+                <pre><code>$ krakenv generate .env.local
+
+🐙 Krakenv Configuration Wizard
+
+Variable 1 of 5
+
+<span class="prompt">DB_HOST</span>
+● Database host? <span class="type">[string]</span>
+<span class="default">(default: localhost)</span>
+
+<span class="input">▌</span>
+</code></pre>
+            </div>
+        </section>
+
+        <section class="install">
+            <h2>Installation</h2>
+            <div class="install-methods">
+                <div class="install-method install-featured">
+                    <h4>Quick Install</h4>
+                    <code>curl -sSL https://raw.githubusercontent.com/theburrowhub/krakenv/main/install.sh | bash</code>
+                </div>
+                <div class="install-method">
+                    <h4>Homebrew</h4>
+                    <code>brew install theburrowhub/tap/krakenv</code>
+                </div>
+                <div class="install-method">
+                    <h4>Go Install</h4>
+                    <code>go install github.com/theburrowhub/krakenv/cmd/krakenv@latest</code>
+                </div>
+                <div class="install-method">
+                    <h4>Binary</h4>
+                    <a href="https://github.com/theburrowhub/krakenv/releases">Download from releases</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-brand">
+            <img src="assets/krakenv-icon.png" alt="" class="footer-icon">
+            <p class="footer-tagline">Built with 💜 by <a href="https://github.com/theburrowhub" target="_blank">The Burrow Hub</a></p>
+            <p class="footer-mission">Crafting effective solutions for developers who deserve better tools</p>
+        </div>
+        <div class="footer-links">
+            <a href="https://github.com/theburrowhub/krakenv">GitHub</a>
+            <span class="footer-separator">·</span>
+            <a href="https://github.com/theburrowhub/krakenv/releases">Releases</a>
+            <span class="footer-separator">·</span>
+            <a href="https://github.com/theburrowhub/krakenv/issues">Issues</a>
+        </div>
+        <p class="footer-license">Open source under the MIT License</p>
+    </footer>
+</body>
+</html>
+

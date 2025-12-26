@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annotation Syntax - Krakenv</title>
+    <link rel="stylesheet" href="assets/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="nav nav-dark">
+        <a href="index.html" class="logo">🐙 Krakenv</a>
+        <div class="nav-links">
+            <a href="getting-started.html">Getting Started</a>
+            <a href="annotation-syntax.html" class="active">Syntax</a>
+            <a href="commands.html">Commands</a>
+            <a href="https://github.com/theburrowhub/krakenv" target="_blank">GitHub</a>
+        </div>
+    </nav>
+
+    <main class="docs">
+        <article>
+            <h1>Annotation Syntax</h1>
+            
+            <h2>Basic Format</h2>
+            <pre><code>VARIABLE=default #prompt:Question?|type;constraint:value;modifier</code></pre>
+
+            <h2>Supported Types</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Description</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>string</code></td>
+                        <td>Text value</td>
+                        <td><code>#prompt:Name?|string;minlen:1</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>int</code></td>
+                        <td>Integer number</td>
+                        <td><code>#prompt:Port?|int;min:1;max:65535</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>numeric</code></td>
+                        <td>Decimal number</td>
+                        <td><code>#prompt:Rate?|numeric;min:0;max:1</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>boolean</code></td>
+                        <td>true/false</td>
+                        <td><code>#prompt:Enable?|boolean</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>enum</code></td>
+                        <td>One of options</td>
+                        <td><code>#prompt:Env?|enum;options:dev,prod</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>object</code></td>
+                        <td>JSON/YAML</td>
+                        <td><code>#prompt:Config?|object;format:json</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Constraints</h2>
+
+            <h3>For int/numeric</h3>
+            <table>
+                <tr><td><code>min:N</code></td><td>Minimum value</td></tr>
+                <tr><td><code>max:N</code></td><td>Maximum value</td></tr>
+            </table>
+            <pre><code>PORT=8080 #prompt:Server port?|int;min:1;max:65535</code></pre>
+
+            <h3>For string</h3>
+            <table>
+                <tr><td><code>minlen:N</code></td><td>Minimum length</td></tr>
+                <tr><td><code>maxlen:N</code></td><td>Maximum length</td></tr>
+                <tr><td><code>pattern:REGEX</code></td><td>Must match regex</td></tr>
+            </table>
+            <pre><code>EMAIL= #prompt:Email?|string;pattern:^[^@]+@[^@]+\\.[^@]+$</code></pre>
+
+            <h3>For enum</h3>
+            <table>
+                <tr><td><code>options:A,B,C</code></td><td>Allowed values</td></tr>
+            </table>
+            <pre><code>ENV=dev #prompt:Environment?|enum;options:dev,staging,prod</code></pre>
+
+            <h3>For object</h3>
+            <table>
+                <tr><td><code>format:json</code></td><td>JSON format</td></tr>
+                <tr><td><code>format:yaml</code></td><td>YAML format</td></tr>
+            </table>
+            <pre><code>CONFIG= #prompt:Configuration?|object;format:json</code></pre>
+
+            <h2>Modifiers</h2>
+
+            <h3>optional</h3>
+            <p>Variable can be left empty without triggering validation errors.</p>
+            <pre><code>DEBUG=false #prompt:Enable debug?|boolean;optional</code></pre>
+
+            <h3>secret</h3>
+            <p>Hide input in wizard and never display current value.</p>
+            <pre><code>API_KEY= #prompt:API key?|string;secret</code></pre>
+
+            <h2>Configuration Block</h2>
+
+            <p>Add project-level settings as special comments:</p>
+            <pre><code>#krakenv:environments=local,testing,production
+#krakenv:strict=false</code></pre>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Key</th>
+                        <th>Description</th>
+                        <th>Default</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>environments</code></td>
+                        <td>Comma-separated list of environments</td>
+                        <td><code>local</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>strict</code></td>
+                        <td>Require all variables to have annotations</td>
+                        <td><code>false</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Complete Example</h2>
+
+            <pre><code>#krakenv:environments=local,testing,production
+#krakenv:strict=false
+
+# Database Configuration
+DB_HOST=localhost #prompt:Database host?|string
+DB_PORT=5432 #prompt:Database port?|int;min:1;max:65535
+DB_NAME= #prompt:Database name?|string;minlen:1
+DB_PASSWORD= #prompt:Database password?|string;secret
+
+# Application Settings
+APP_ENV=development #prompt:Environment?|enum;options:development,staging,production
+DEBUG=true #prompt:Enable debug mode?|boolean;optional
+WORKERS=4 #prompt:Number of workers?|int;min:1;max:16
+
+# Feature Flags (no annotation = not prompted)
+ENABLE_CACHE=true
+LOG_LEVEL=info</code></pre>
+        </article>
+    </main>
+
+    <style>
+        .nav-dark {
+            position: relative;
+            background: var(--color-surface);
+            border-bottom: 1px solid var(--color-border);
+        }
+        .docs {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        .docs h1 {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .docs h2 {
+            font-size: 1.75rem;
+            margin: 3rem 0 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--color-border);
+        }
+        .docs h3 {
+            font-size: 1.25rem;
+            margin: 2rem 0 0.5rem;
+            color: var(--color-secondary);
+        }
+        .docs p {
+            color: var(--color-text-muted);
+            margin-bottom: 1rem;
+        }
+        .docs pre {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+        .docs code {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--color-secondary);
+        }
+        .docs table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        .docs th, .docs td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--color-border);
+        }
+        .docs th {
+            color: var(--color-text-muted);
+            font-weight: 400;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+        .docs td code {
+            background: var(--color-bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+        }
+        .nav-links .active {
+            color: var(--color-primary);
+        }
+    </style>
+</body>
+</html>
+

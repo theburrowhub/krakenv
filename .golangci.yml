@@ -1,0 +1,74 @@
+# golangci-lint configuration for Krakenv
+# Documentation: https://golangci-lint.run/usage/configuration/
+
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  # Use default linters only for now
+  default: standard
+  enable:
+    - bodyclose
+    - dogsled
+    - dupl
+    - copyloopvar
+    - goconst
+    - misspell
+    - nakedret
+    - noctx
+    - unconvert
+    - unparam
+    - whitespace
+  disable:
+    - errcheck  # Temporarily disabled - will enable with proper error handling
+    - gocyclo   # TUI Update functions are inherently complex
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/theburrowhub/krakenv
+
+linters-settings:
+  gocyclo:
+    min-complexity: 40  # TUI Update functions are inherently complex
+
+  dupl:
+    threshold: 200
+
+  goconst:
+    min-len: 3
+    min-occurrences: 5
+
+issues:
+  exclude-rules:
+    # Exclude tests from most linters
+    - path: _test\.go
+      linters:
+        - dupl
+        - goconst
+        - gosec
+        - errcheck
+
+    # Exclude TUI files from cyclomatic complexity (Update functions are inherently complex)
+    - path: "internal/tui/.*\\.go"
+      linters:
+        - gocyclo
+
+    # Ignore defer close errors (common pattern)
+    - linters:
+        - errcheck
+      source: "defer .*\\.(Close|Flush)\\(\\)"
+
+    # Ignore fmt.Fprint errors when writing to buffers
+    - linters:
+        - errcheck
+      source: "fmt\\.Fprint"
+
+  max-issues-per-linter: 20
+  max-same-issues: 5

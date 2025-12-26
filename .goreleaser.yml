@@ -1,0 +1,113 @@
+# GoReleaser configuration for Krakenv
+# Documentation: https://goreleaser.com
+
+version: 2
+
+project_name: krakenv
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - id: krakenv
+    main: ./cmd/krakenv
+    binary: krakenv
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+archives:
+  - id: default
+    format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
+      - README.md
+
+checksum:
+  name_template: "checksums.txt"
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "^ci:"
+      - Merge pull request
+      - Merge branch
+  groups:
+    - title: "🚀 Features"
+      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
+      order: 0
+    - title: "🐛 Bug Fixes"
+      regexp: '^.*?fix(\([[:word:]]+\))??!?:.+$'
+      order: 1
+    - title: "📚 Documentation"
+      regexp: '^.*?docs(\([[:word:]]+\))??!?:.+$'
+      order: 2
+    - title: "🔧 Maintenance"
+      order: 999
+
+release:
+  github:
+    owner: jamuriano
+    name: krakenv
+  draft: false
+  prerelease: auto
+  name_template: "v{{ .Version }}"
+
+brews:
+  - name: krakenv
+    repository:
+      owner: jamuriano
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    skip_upload: auto
+    directory: Formula
+    homepage: "https://github.com/jamuriano/krakenv"
+    description: "Environment variable management tool with annotation-based wizards"
+    license: "MIT"
+    install: |
+      bin.install "krakenv"
+    test: |
+      system "#{bin}/krakenv", "version"
+
+nfpms:
+  - id: packages
+    package_name: krakenv
+    vendor: jamuriano
+    homepage: "https://github.com/jamuriano/krakenv"
+    maintainer: "jamuriano <jamuriano@users.noreply.github.com>"
+    description: "Environment variable management tool with annotation-based wizards"
+    license: MIT
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/bin
+
+announce:
+  skip: true
+
