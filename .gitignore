@@ -1,8 +1,8 @@
 # Krakenv .gitignore
 
-# Binary
-krakenv
-krakenv.exe
+# Binary (only in root, not cmd/krakenv/)
+/krakenv
+/krakenv.exe
 *.exe
 *.test
 *.out
