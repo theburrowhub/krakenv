@@ -1,7 +1,7 @@
 # Krakenv - Environment Variable Management Tool
 # "When envs get complex, release the krakenv"
 
-.PHONY: all build test lint fmt clean install help
+.PHONY: all build test lint fmt clean install help goreleaser-check goreleaser-build goreleaser-release-dry
 
 # Go parameters
 GOCMD=go
@@ -71,6 +71,23 @@ check: lint test
 ## run: Run the application
 run: build
 	./$(BINARY_NAME)
+
+# ========== GORELEASER TARGETS ==========
+
+## goreleaser-check: Check goreleaser configuration
+goreleaser-check:
+	@echo "Checking goreleaser configuration..."
+	@goreleaser check
+
+## goreleaser-build: Build snapshot with goreleaser (no publish)
+goreleaser-build:
+	@echo "Building with goreleaser (snapshot)..."
+	@goreleaser build --snapshot --clean
+
+## goreleaser-release-dry: Simulate full release with goreleaser (no publish)
+goreleaser-release-dry:
+	@echo "Simulating release with goreleaser..."
+	@goreleaser release --snapshot --clean
 
 ## help: Show this help
 help:
