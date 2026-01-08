@@ -24,6 +24,14 @@ linters:
   disable:
     - errcheck  # Temporarily disabled - will enable with proper error handling
     - gocyclo   # TUI Update functions are inherently complex
+  settings:
+    gocyclo:
+      min-complexity: 40  # TUI Update functions are inherently complex
+    dupl:
+      threshold: 200
+    goconst:
+      min-len: 3
+      min-occurrences: 5
 
 formatters:
   enable:
@@ -34,41 +42,30 @@ formatters:
       local-prefixes:
         - github.com/theburrowhub/krakenv
 
-linters-settings:
-  gocyclo:
-    min-complexity: 40  # TUI Update functions are inherently complex
-
-  dupl:
-    threshold: 200
-
-  goconst:
-    min-len: 3
-    min-occurrences: 5
-
 issues:
-  exclude-rules:
-    # Exclude tests from most linters
-    - path: _test\.go
-      linters:
-        - dupl
-        - goconst
-        - gosec
-        - errcheck
-
-    # Exclude TUI files from cyclomatic complexity (Update functions are inherently complex)
-    - path: "internal/tui/.*\\.go"
-      linters:
-        - gocyclo
-
-    # Ignore defer close errors (common pattern)
-    - linters:
-        - errcheck
-      source: "defer .*\\.(Close|Flush)\\(\\)"
-
-    # Ignore fmt.Fprint errors when writing to buffers
-    - linters:
-        - errcheck
-      source: "fmt\\.Fprint"
-
   max-issues-per-linter: 20
   max-same-issues: 5
+  exclusions:
+    rules:
+      # Exclude tests from most linters
+      - path: _test\.go
+        linters:
+          - dupl
+          - goconst
+          - gosec
+          - errcheck
+
+      # Exclude TUI files from cyclomatic complexity (Update functions are inherently complex)
+      - path: "internal/tui/.*\\.go"
+        linters:
+          - gocyclo
+
+      # Ignore defer close errors (common pattern)
+      - linters:
+          - errcheck
+        source: "defer .*\\.(Close|Flush)\\(\\)"
+
+      # Ignore fmt.Fprint errors when writing to buffers
+      - linters:
+          - errcheck
+        source: "fmt\\.Fprint"
