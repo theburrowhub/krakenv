@@ -32,19 +32,6 @@ linters:
     goconst:
       min-len: 3
       min-occurrences: 5
-
-formatters:
-  enable:
-    - gofmt
-    - goimports
-  settings:
-    goimports:
-      local-prefixes:
-        - github.com/theburrowhub/krakenv
-
-issues:
-  max-issues-per-linter: 20
-  max-same-issues: 5
   exclusions:
     rules:
       # Exclude tests from most linters
@@ -69,3 +56,16 @@ issues:
       - linters:
           - errcheck
         source: "fmt\\.Fprint"
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/theburrowhub/krakenv
+
+issues:
+  max-issues-per-linter: 20
+  max-same-issues: 5
