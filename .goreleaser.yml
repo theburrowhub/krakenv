@@ -108,6 +108,60 @@ nfpms:
       - rpm
     bindir: /usr/bin
 
+# ========== DOCKER CONFIGURATION ==========
+dockers:
+  # AMD64
+  - id: krakenv-amd64
+    ids:
+      - krakenv
+    goos: linux
+    goarch: amd64
+    image_templates:
+      - "ghcr.io/theburrowhub/krakenv:{{ .Version }}-amd64"
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.description=Environment variable management tool with annotation-based wizards"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.source={{ .GitURL }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.licenses=MIT"
+
+  # ARM64
+  - id: krakenv-arm64
+    ids:
+      - krakenv
+    goos: linux
+    goarch: arm64
+    image_templates:
+      - "ghcr.io/theburrowhub/krakenv:{{ .Version }}-arm64"
+    dockerfile: Dockerfile
+    build_flag_templates:
+      - "--pull"
+      - "--platform=linux/arm64"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.description=Environment variable management tool with annotation-based wizards"
+      - "--label=org.opencontainers.image.version={{ .Version }}"
+      - "--label=org.opencontainers.image.source={{ .GitURL }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.licenses=MIT"
+
+docker_manifests:
+  - name_template: "ghcr.io/theburrowhub/krakenv:{{ .Version }}"
+    image_templates:
+      - "ghcr.io/theburrowhub/krakenv:{{ .Version }}-amd64"
+      - "ghcr.io/theburrowhub/krakenv:{{ .Version }}-arm64"
+
+  - name_template: "ghcr.io/theburrowhub/krakenv:latest"
+    image_templates:
+      - "ghcr.io/theburrowhub/krakenv:{{ .Version }}-amd64"
+      - "ghcr.io/theburrowhub/krakenv:{{ .Version }}-arm64"
+    skip_push: auto
+
 announce:
   skip: true
 
