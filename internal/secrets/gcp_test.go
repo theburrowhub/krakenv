@@ -32,12 +32,12 @@ var _ Fetcher = (*mockFetcher)(nil)
 
 func TestBuildResourceName(t *testing.T) {
 	tests := []struct {
-		name        string
-		project     string
-		secretName  string
-		version     string
-		wantName    string
-		wantErr     bool
+		name       string
+		project    string
+		secretName string
+		version    string
+		wantName   string
+		wantErr    bool
 	}{
 		{
 			name:       "all fields explicit",
