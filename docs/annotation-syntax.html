@@ -109,6 +109,59 @@
             <p>Hide input in wizard and never display current value.</p>
             <pre><code>API_KEY= #prompt:API key?|string;secret</code></pre>
 
+            <h2>GCP Secret Manager</h2>
+
+            <p>The <code>gcp-secret</code> modifier fetches a variable's value automatically from
+            <a href="https://cloud.google.com/secret-manager" target="_blank">Google Cloud Secret Manager</a>
+            instead of prompting the user. The <code>.env.dist</code> is the
+            <strong>single source of truth</strong>: project, secret name, and version are all
+            declared as explicit named fields directly in the annotation — no flags or
+            environment variables needed. A single template can pull secrets from
+            <strong>different GCP projects</strong>.</p>
+
+            <h3>Annotation fields</h3>
+            <table>
+                <thead>
+                    <tr><th>Field</th><th>Required</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>gcp-secret</code></td>
+                        <td>yes</td>
+                        <td>Modifier — marks the variable as GCP-sourced</td>
+                    </tr>
+                    <tr>
+                        <td><code>gcp-secret-project:PROJECT</code></td>
+                        <td>yes</td>
+                        <td>GCP project ID</td>
+                    </tr>
+                    <tr>
+                        <td><code>gcp-secret-name:NAME</code></td>
+                        <td>yes</td>
+                        <td>Secret name in Secret Manager</td>
+                    </tr>
+                    <tr>
+                        <td><code>gcp-secret-version:VERSION</code></td>
+                        <td>no</td>
+                        <td>Version number (default: <code>latest</code>). Accepts <code>3</code> or <code>v3</code>.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Examples</h3>
+            <pre><code># Each annotation is self-contained — secrets from different GCP projects
+API_KEY=      #prompt:API Key?|string;secret;gcp-secret;gcp-secret-project:payments-project;gcp-secret-name:stripe-key;gcp-secret-version:v2
+DB_PASSWORD=  #prompt:DB Password?|string;secret;gcp-secret;gcp-secret-project:infra-project;gcp-secret-name:db-password
+JWT_SECRET=   #prompt:JWT Secret?|string;secret;gcp-secret;gcp-secret-project:auth-project;gcp-secret-name:jwt-secret;gcp-secret-version:3</code></pre>
+
+            <h3>Authentication</h3>
+            <p>Krakenv uses <strong>Application Default Credentials (ADC)</strong>. Configure one of:</p>
+            <table>
+                <tr><td>gcloud CLI</td><td><code>gcloud auth application-default login</code></td></tr>
+                <tr><td>Service account key</td><td><code>GOOGLE_APPLICATION_CREDENTIALS=/path/key.json</code></td></tr>
+                <tr><td>GCP-hosted (GCE/Cloud Run/GKE)</td><td>Automatic</td></tr>
+            </table>
+
             <h2>Configuration Block</h2>
 
             <p>Add project-level settings as special comments:</p>

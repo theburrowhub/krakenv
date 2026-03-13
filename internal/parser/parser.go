@@ -15,14 +15,17 @@ var ErrInvalidAnnotation = errors.New("invalid annotation syntax")
 
 // knownConstraints lists all valid constraint names.
 var knownConstraints = map[string]bool{
-	"min":      true,
-	"max":      true,
-	"minlen":   true,
-	"maxlen":   true,
-	"pattern":  true,
-	"options":  true,
-	"format":   true,
-	"encoding": true,
+	"min":                true,
+	"max":                true,
+	"minlen":             true,
+	"maxlen":             true,
+	"pattern":            true,
+	"options":            true,
+	"format":             true,
+	"encoding":           true,
+	"gcp-secret-project": true,
+	"gcp-secret-name":    true,
+	"gcp-secret-version": true,
 }
 
 // ParseAnnotation parses an annotation string into an Annotation struct.
@@ -74,6 +77,10 @@ func ParseAnnotation(s string) (*Annotation, error) {
 		}
 		if part == "secret" {
 			ann.IsSecret = true
+			continue
+		}
+		if part == "gcp-secret" {
+			ann.IsGCPSecret = true
 			continue
 		}
 
@@ -256,6 +263,9 @@ func FormatAnnotation(a *Annotation) string {
 	}
 	if a.IsSecret {
 		parts = append(parts, "secret")
+	}
+	if a.IsGCPSecret {
+		parts = append(parts, "gcp-secret")
 	}
 
 	return "#prompt:" + a.PromptText + "|" + strings.Join(parts, ";")

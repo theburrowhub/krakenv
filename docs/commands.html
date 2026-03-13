@@ -74,7 +74,10 @@ krakenv generate .env.local
 krakenv generate --all
 
 # CI/CD mode (fails if unresolved)
-krakenv generate .env.local --non-interactive</code></pre>
+krakenv generate .env.local --non-interactive
+
+# GCP secrets are resolved automatically — no extra flags needed
+krakenv generate .env.production --non-interactive</code></pre>
 
             <h2 id="validate">validate</h2>
             <p>Validate environment file against distributable annotations.</p>
