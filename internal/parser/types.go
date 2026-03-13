@@ -72,6 +72,7 @@ type Annotation struct {
 	Constraints []Constraint // Validation constraints
 	IsOptional  bool         // Whether the variable is optional
 	IsSecret    bool         // Whether to hide input/output
+	IsGCPSecret bool         // Whether to fetch value from GCP Secret Manager
 }
 
 // GetConstraint returns the constraint value for a given name, or empty string if not found.

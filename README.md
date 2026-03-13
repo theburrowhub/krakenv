@@ -25,6 +25,7 @@ Krakenv is a CLI tool for managing environment variable files (`.env`) with an a
 - **Validation**: Type checking (int, string, enum, boolean, object) with constraints (min, max, pattern, etc.)
 - **Inspection**: Compare distributable and environment files, sync discrepancies
 - **CI/CD Ready**: Non-interactive mode with exit codes for pipeline integration
+- **Google Cloud Secret Manager**: Fetch secret values automatically from GCP Secret Manager
 - **Cross-Platform**: Runs on Linux, macOS, and Windows
 
 ## 📦 Installation
@@ -120,6 +121,7 @@ VARIABLE=default #prompt:Question?|type;constraint:value;modifier
 | `pattern` | string | Regex pattern |
 | `options` | enum | Allowed values |
 | `format` | object | `json` or `yaml` |
+| `gcp-secret` | any | Fetch value from GCP Secret Manager |
 
 ### Modifiers
 
@@ -147,6 +149,83 @@ krakenv version             # Show version information
 | `--non-interactive, -n` | Disable TUI; fail on unresolved variables |
 | `--quiet, -q` | Suppress non-error output |
 | `--verbose, -v` | Enable detailed output |
+
+## 🔐 Google Cloud Secret Manager
+
+Krakenv can automatically fetch secret values from [GCP Secret Manager](https://cloud.google.com/secret-manager), eliminating the need to manually enter sensitive values during generation.
+
+The `.env.dist` is the **single source of truth**. Each `gcp-secret` variable
+declares its project, name, and version as explicit, named fields — no flags or
+environment variables are needed. A single template can pull secrets from
+**different GCP projects**.
+
+### Annotation fields
+
+| Field | Required | Description |
+|-------|----------|-------------|
+| `gcp-secret` | yes | Modifier — marks the variable as GCP-sourced |
+| `gcp-secret-project:PROJECT` | yes | GCP project ID |
+| `gcp-secret-name:NAME` | yes | Secret name in Secret Manager |
+| `gcp-secret-version:VERSION` | no | Version number (default: `latest`) |
+
+Version accepts both numeric (`3`) and v-prefixed (`v3`) notation.
+
+```env
+#krakenv:environments=local,production
+
+# Secrets from different GCP projects — each annotation is self-contained
+API_KEY=      #prompt:API Key?|string;secret;gcp-secret;gcp-secret-project:payments-project;gcp-secret-name:stripe-key;gcp-secret-version:v2
+DB_PASSWORD=  #prompt:DB Password?|string;secret;gcp-secret;gcp-secret-project:infra-project;gcp-secret-name:db-password
+JWT_SECRET=   #prompt:JWT Secret?|string;secret;gcp-secret;gcp-secret-project:auth-project;gcp-secret-name:jwt-secret;gcp-secret-version:3
+```
+
+### Usage
+
+```bash
+# No flags needed — all information is in the .env.dist
+krakenv generate .env.local
+
+# Works in non-interactive mode (fully automated CI/CD)
+krakenv generate .env.production --non-interactive
+
+# Verbose output shows how many secrets were resolved
+krakenv generate .env.local --verbose
+```
+
+### Authentication
+
+Krakenv uses **Application Default Credentials (ADC)**. Configure one of:
+
+| Method | Command |
+|--------|---------|
+| gcloud CLI | `gcloud auth application-default login` |
+| Service account key | `export GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json` |
+| GCP-hosted environment | Automatic (GCE, Cloud Run, GKE, etc.) |
+
+### CI/CD with Workload Identity
+
+```yaml
+# GitHub Actions with Workload Identity Federation
+- name: Authenticate to GCP
+  uses: google-github-actions/auth@v2
+  with:
+    workload_identity_provider: 'projects/123/locations/global/workloadIdentityPools/...'
+    service_account: 'krakenv@my-project.iam.gserviceaccount.com'
+
+- name: Generate environment
+  run: krakenv generate .env.production --non-interactive
+```
+
+### Required IAM Role
+
+The authenticated principal needs `roles/secretmanager.secretAccessor` on each secret.
+
+```bash
+gcloud secrets add-iam-policy-binding my-api-key \
+  --project my-project \
+  --member="serviceAccount:krakenv@my-project.iam.gserviceaccount.com" \
+  --role="roles/secretmanager.secretAccessor"
+```
 
 ## 🔄 CI/CD Integration
 
